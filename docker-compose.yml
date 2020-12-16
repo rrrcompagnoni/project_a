@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  phoenix:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/opt/project_a
+    depends_on: 
+      - db
+    command: mix phx.server
+    ports:
+      - "4000:4000"
+  db:
+    image: postgres:13.1-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    restart: always
