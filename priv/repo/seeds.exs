@@ -1,11 +1,3 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     ProjectA.Repo.insert!(%ProjectA.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+users_attributes = ProjectA.produce_users_attributes(0, DateTime.now!("Etc/UTC"), 100)
+
+:ok = ProjectA.bulk_insert_users(users_attributes)

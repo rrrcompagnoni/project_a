@@ -12,19 +12,15 @@ Build the container
 docker-compose build
 ```
 
-Start the database
+Setup the application with its dependencies
 ```
-docker-compose up -d db
-```
-
-Run the container console
-```
-docker-compose run phoenix /bin/sh
+docker-compose run phoenix mix setup
 ```
 
-Fetch dependencies, compile assets, and setup the database
+### Elixir console
+Run
 ```
-mix deps.get && mix ecto.setup && cd assets && npm install && node node_modules/webpack/bin/webpack.js --mode development && exit
+docker-compose run phoenix iex -S mix
 ```
 
 ### Web server
