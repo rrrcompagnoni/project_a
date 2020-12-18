@@ -61,9 +61,7 @@ defmodule ProjectATest do
       [scorer_a, scorer_b] = ProjectA.list_users()
 
       assert scorer_a.updated_at == update_at
-      assert scorer_a.points != 0
       assert scorer_b.updated_at == update_at
-      assert scorer_b.points != 0
     end
   end
 
