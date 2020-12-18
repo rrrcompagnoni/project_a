@@ -15,6 +15,8 @@ defmodule ProjectAWeb.Router do
 
   scope "/", ProjectAWeb do
     pipe_through :browser
+
+    get "/", ScoreController, :show
   end
 
   # Other scopes may use custom stacks.

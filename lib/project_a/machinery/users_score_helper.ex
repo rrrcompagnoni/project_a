@@ -5,6 +5,10 @@ defmodule ProjectA.Machinery.UsersScoreHelper do
     60_000
   end
 
+  def build_initial_state(initial_score) do
+    %UsersScore{timestamp: nil, max_number: initial_score}
+  end
+
   def update_points(%UsersScore{} = machine_state, %DateTime{} = timestamp, max_number)
       when is_number(max_number) do
     :ok = ProjectA.update_users_points(timestamp)

@@ -10,6 +10,13 @@ defmodule ProjectA.Machinery.UsersScoreHelperTest do
     end
   end
 
+  describe "build_initial_state/1" do
+    test "the initial timestamp value" do
+      assert %UsersScore{timestamp: nil, max_number: 30} ==
+               UsersScoreHelper.build_initial_state(30)
+    end
+  end
+
   describe "update_points/3" do
     test "the new state response" do
       assert %UsersScore{max_number: 60} =

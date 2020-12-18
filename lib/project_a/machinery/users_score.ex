@@ -9,7 +9,7 @@ defmodule ProjectA.Machinery.UsersScore do
 
   def start_link(max_number)
       when is_number(max_number) do
-    GenServer.start_link(__MODULE__, %__MODULE__{max_number: max_number, timestamp: nil},
+    GenServer.start_link(__MODULE__, UsersScoreHelper.build_initial_state(max_number),
       name: __MODULE__
     )
   end
