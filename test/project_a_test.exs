@@ -1,5 +1,5 @@
 defmodule ProjectATest do
-  use ProjectA.DataCase, async: true
+  use ProjectA.DataCase, async: false
 
   describe "bulk_insert_users/1" do
     test "the transaction rollback" do
@@ -41,6 +41,80 @@ defmodule ProjectATest do
                %{points: ^default_points, inserted_at: ^insert_time, updated_at: ^insert_time},
                %{points: ^default_points, inserted_at: ^insert_time, updated_at: ^insert_time}
              ] = ProjectA.produce_users_attributes(default_points, insert_time, 3)
+    end
+  end
+
+  describe "update_users_points/1" do
+    test "all users points are updating" do
+      insert_time = DateTime.now!("Etc/UTC")
+
+      :ok =
+        ProjectA.bulk_insert_users([
+          %{points: 0, inserted_at: insert_time, updated_at: insert_time},
+          %{points: 0, inserted_at: insert_time, updated_at: insert_time}
+        ])
+
+      update_at = DateTime.now!("Etc/UTC")
+
+      assert :ok = ProjectA.update_users_points(update_at)
+
+      [scorer_a, scorer_b] = ProjectA.list_users()
+
+      assert scorer_a.updated_at == update_at
+      assert scorer_a.points != 0
+      assert scorer_b.updated_at == update_at
+      assert scorer_b.points != 0
+    end
+  end
+
+  describe "list_top_scorers/1" do
+    test "the minimum score to be considered" do
+      insert_time = DateTime.now!("Etc/UTC")
+
+      :ok =
+        ProjectA.bulk_insert_users([
+          %{points: 30, inserted_at: insert_time, updated_at: insert_time},
+          %{points: 90, inserted_at: insert_time, updated_at: insert_time}
+        ])
+
+      [scorer] = ProjectA.list_top_scorers(50)
+
+      assert scorer.points == 90
+    end
+
+    test "the order of points" do
+      insert_time = DateTime.now!("Etc/UTC")
+
+      :ok =
+        ProjectA.bulk_insert_users([
+          %{points: 15, inserted_at: insert_time, updated_at: insert_time},
+          %{points: 30, inserted_at: insert_time, updated_at: insert_time},
+          %{points: 90, inserted_at: insert_time, updated_at: insert_time}
+        ])
+
+      [scorer_a, scorer_b] = ProjectA.list_top_scorers(10)
+
+      assert scorer_a.points == 90
+      assert scorer_b.points == 30
+    end
+
+    test "the size of the list of the top scorers" do
+      insert_time = DateTime.now!("Etc/UTC")
+
+      :ok =
+        ProjectA.bulk_insert_users([
+          %{points: 15, inserted_at: insert_time, updated_at: insert_time},
+          %{points: 30, inserted_at: insert_time, updated_at: insert_time},
+          %{points: 90, inserted_at: insert_time, updated_at: insert_time}
+        ])
+
+      [_, _] = ProjectA.list_top_scorers(10)
+    end
+  end
+
+  describe "generate_score" do
+    test "the score generation behavior, it never goes far from 100 and generate a 0 score" do
+      assert Enum.filter(1..150, fn _ -> ProjectA.generate_score() > 100 end) == []
     end
   end
 end

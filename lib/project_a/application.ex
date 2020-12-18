@@ -14,9 +14,9 @@ defmodule ProjectA.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: ProjectA.PubSub},
       # Start the Endpoint (http/https)
-      ProjectAWeb.Endpoint
+      ProjectAWeb.Endpoint,
       # Start a worker by calling: ProjectA.Worker.start_link(arg)
-      # {ProjectA.Worker, arg}
+      {ProjectA.Machinery.UsersScore, ProjectA.generate_score()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

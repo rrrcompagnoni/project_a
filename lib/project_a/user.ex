@@ -11,7 +11,7 @@ defmodule ProjectA.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:points])
+    |> cast(attrs, [:points, :updated_at])
     |> validate_required([:points])
     |> validate_number(:points,
       greater_than_or_equal_to: 0,

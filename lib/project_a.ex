@@ -1,4 +1,6 @@
 defmodule ProjectA do
+  import Ecto.Query, only: [from: 2]
+
   alias ProjectA.Repo
   alias ProjectA.User
 
@@ -28,5 +30,53 @@ defmodule ProjectA do
   @spec count_persisted_users() :: integer()
   def count_persisted_users() do
     Repo.aggregate(User, :count, :id)
+  end
+
+  @spec list_users() :: list(Uset.t())
+  def list_users() do
+    Repo.all(User)
+  end
+
+  @spec update_users_points(DateTime.t()) :: :ok
+  def update_users_points(%DateTime{} = update_at) do
+    Repo.transaction(fn ->
+      User
+      |> Repo.stream()
+      |> Enum.map(&update_user_points(&1, update_at, generate_score()))
+    end)
+    |> case do
+      {:ok, _} ->
+        :ok
+    end
+  end
+
+  @spec top_scorers() :: %{
+          timestamp: DateTime.t() | nil,
+          users: list(User.t())
+        }
+  def top_scorers() do
+    ProjectA.Machinery.UsersScore.top_scorers()
+  end
+
+  @spec list_top_scorers(integer()) :: [User.t()]
+  def list_top_scorers(minimum_score) when is_number(minimum_score) do
+    query =
+      from u in User,
+        where: u.points > ^minimum_score,
+        limit: 2,
+        order_by: [desc: :points]
+
+    Repo.all(query)
+  end
+
+  @spec generate_score() :: integer()
+  def generate_score() do
+    Enum.random(0..100)
+  end
+
+  defp update_user_points(user, update_at, points) do
+    user
+    |> User.changeset(%{points: points, updated_at: update_at})
+    |> Repo.update!()
   end
 end
