@@ -12,6 +12,11 @@ Build the container
 docker-compose build
 ```
 
+Start the database
+```
+docker-compose up -d db
+```
+
 Setup the application with its dependencies
 ```
 docker-compose run phoenix mix setup
